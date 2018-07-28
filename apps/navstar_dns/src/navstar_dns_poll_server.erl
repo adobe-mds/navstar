@@ -189,10 +189,10 @@ scheme() ->
 mesos_master_uri() ->
     case inet:getaddr("leader.mesos", inet) of
         {ok, _} ->
-            lists:flatten(scheme() ++ "://leader.mesos:5050/state");
+            lists:flatten(scheme() ++ "://leader.mesos:5050/version");
         _ ->
             IP = inet:ntoa(mesos_state:ip()),
-            lists:flatten(io_lib:format("~s://~s:5050/state", [scheme(), IP]))
+            lists:flatten(io_lib:format("~s://~s:5050/version", [scheme(), IP]))
     end.
 
 %% We should only ever poll mesos dns on the masters
@@ -223,7 +223,7 @@ mesos_dns_poll() ->
 
 handle_mesos_dns_response({error, Reason}) ->
     {error, Reason};
-handle_mesos_dns_response({ok, {_StatusLine = {_HTTPVersion, 200 = _StatusCode, _ReasonPhrase}, _Headers, Body}}) ->
+    handle_mesos_dns_response({ok, {_StatusLine = {_HTTPVersion, 200 = _StatusCode, _ReasonPhrase}, _Headers, Body}}) ->
     DecodedBody = jsx:decode(Body, [return_maps]),
     handle_mesos_dns_body(DecodedBody);
 handle_mesos_dns_response({ok, {StatusLine, _Headers, _Body}}) ->
